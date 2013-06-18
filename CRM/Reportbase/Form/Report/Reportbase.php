@@ -1081,7 +1081,7 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
     $defaultTpl = parent::getTemplateFileName();
 
     if(in_array( $this->_outputMode, array( 'print', 'pdf' ))){
-      if($this->_params['templates']){
+      if(!empty($this->_params['templates'])){
         $defaultTpl = 'CRM/ReportBase/Form/Report/CustomTemplates/' . $this->_params['templates'] .'.tpl';
       }
     }
