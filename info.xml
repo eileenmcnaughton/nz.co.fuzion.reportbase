@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<extension key="nz.co.fuzion.reportbase" type="module">
+  <file>reportbase</file>
+  <name>Base report class supports other report extensions</name>
+  <description>This class does not provide reports on its own but is required for other report extensions</description>
+  <license>agpl</license>
+  <maintainer>
+    <author>Eileen McNaughton</author>
+    <email>eileen@fuzion.co.nz</email>
+  </maintainer>
+  <releaseDate>2013-06-17</releaseDate>
+  <version>1.0</version>
+  <develStage>stable</develStage>
+  <compatibility>
+    <ver>4.2</ver>
+    <ver>4.3</ver>
+    <ver>4.4</ver>
+  </compatibility>
+  <comments>This report class supports other reports such as crosstab reports, reports showing custom data from 2 related parties etc and allows reports to support multiple versions of CiviCRM</comments>
+  <civix>
+    <namespace>CRM/Reportbase</namespace>
+  </civix>
+</extension>
