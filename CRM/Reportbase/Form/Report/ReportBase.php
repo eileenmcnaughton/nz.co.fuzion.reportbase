@@ -2404,10 +2404,14 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
       'defaults' => array(
         'country_id' => TRUE
       ),
+      'contact_type' => NULL,
      );
 
     $options = array_merge($defaultOptions,$options);
-
+    $orgOnly = False;
+    if(CRM_Utils_Array::value('contact_type', $options) == 'Organization') {
+      $orgOnly = True;
+    }
     $contactFields = array(
       $options['prefix'] . 'civicrm_contact' => array(
         'dao' => 'CRM_Contact_DAO_Contact',
@@ -2432,7 +2436,9 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
               'name' => 'external_identifier',
               'title' => ts($options['prefix_label'] . 'External ID'),
               'type' => CRM_Utils_Type::T_INT,
-          ),
+          )
+     );
+     $individualFields = array(
           'first_name' => array(
             'title' => ts($options['prefix_label'] . 'First Name'),
           ),
@@ -2447,6 +2453,9 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
             'alter_display' => 'alterNickName',
           ),
         );
+     if(!$orgOnly) {
+       $contactFields[$options['prefix'] . 'civicrm_contact']['fields'] = array_merge($contactFields[$options['prefix'] . 'civicrm_contact']['fields'], $individualFields);
+     }
     }
 
     if(!empty($options['filters'])){
@@ -2473,7 +2482,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
     if(!empty($options['order_by'])){
       $contactFields[$options['prefix'] . 'civicrm_contact']['order_bys'] =  array(
           'sort_name' => array(
-            'title' => ts($options['prefix_label'] . 'Last Name, First Name'),
+            'title' => ts($options['prefix_label'] . 'Name'),
             'default' => '1',
             'default_weight' => '0',
             'default_order' => 'ASC',
@@ -3265,6 +3274,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
 
     $this->_from .= " LEFT JOIN civicrm_address {$this->_aliases[$prefix . 'civicrm_address']}
     ON {$this->_aliases[$prefix . 'civicrm_address']}.contact_id = {$this->_aliases[$prefix . 'civicrm_contact']}.id
+    AND {$this->_aliases[$prefix . 'civicrm_address']}.is_primary = 1
     ";
     return true;
   }
@@ -3287,7 +3297,9 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
 */
   function joinEmailFromContact( $prefix = '') {
     $this->_from .= " LEFT JOIN civicrm_email {$this->_aliases[$prefix . 'civicrm_email']}
-ON {$this->_aliases[$prefix . 'civicrm_email']}.contact_id = {$this->_aliases[$prefix . 'civicrm_contact']}.id";
+   ON {$this->_aliases[$prefix . 'civicrm_email']}.contact_id = {$this->_aliases[$prefix . 'civicrm_contact']}.id
+   AND {$this->_aliases[$prefix . 'civicrm_email']}.is_primary = 1
+";
   }
 
   /*
@@ -3834,7 +3846,13 @@ ON ({$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participan
   }
 
   function alterContactID($value, &$row, $fieldname) {
-    $row[$fieldname . '_link'] = CRM_Utils_System::url("civicrm/contact/view", 'reset=1&cid=' . $value, $this->_absoluteUrl);
+    $nameField = substr($fieldname,0, -2) . 'name';
+    if(array_key_exists($nameField, $row)) {
+      $row[$nameField . '_link'] = CRM_Utils_System::url("civicrm/contact/view", 'reset=1&cid=' . $value, $this->_absoluteUrl);
+    }
+    else{
+      $row[$fieldname . '_link'] = CRM_Utils_System::url("civicrm/contact/view", 'reset=1&cid=' . $value, $this->_absoluteUrl);
+    }
     return $value;
   }
 
