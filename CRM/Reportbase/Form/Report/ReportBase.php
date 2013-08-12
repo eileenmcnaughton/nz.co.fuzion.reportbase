@@ -1645,11 +1645,19 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
       case 'String':
       case 'Int':
         if (in_array($htmlType, array(
-        'Text', 'TextArea'))) {
+        'Text', 'TextArea', 'Select'))) {
         $retValue = $value;
+        if($htmlType == 'Select') {
+          $options = civicrm_api('custom_field', 'getoptions', array('version' =>3, 'field' => 'custom_28'));
+          $options = $options['values'];
+          $options['selected'] = $value;
+          $extra = "data-type='select' data-options='" . json_encode($options)  . "'";
+          $value = $options[$value];
+        }
         if(!empty($entity_field)){
+          //$
           $retValue = "<div id={$entity}-{$entityID} class='crm-entity'>
-          <span class='crm-editable crmf-custom_{$customField['id']} crm-editable-enabled' data-action='create'>" . $value . "</span></div>";
+          <span class='crm-editable crmf-custom_{$customField['id']} crm-editable' data-action='create' $extra >" . $value . "</span></div>";
         }
         break;
         }
@@ -2388,6 +2396,11 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
             'alter_display' => 'alterContactID',
             'type' => CRM_Utils_Type::T_INT,
           ),
+          $options['prefix'] . 'external_identifier' => array(
+              'name' => 'external_identifier',
+              'title' => ts($options['prefix_label'] . 'External ID'),
+              'type' => CRM_Utils_Type::T_INT,
+          ),
           'first_name' => array(
             'title' => ts($options['prefix_label'] . 'First Name'),
           ),
@@ -2696,6 +2709,30 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
             'default' => CRM_Utils_Array::value('name', $options['defaults'], FALSE),
             'name' => 'name',
           ),
+          $options['prefix'] . 'street_number' => array(
+            'name' => 'street_number',
+            'title' => ts($options['prefix_label'] . 'Street Number'),
+            'type' => 1,
+            'default' => CRM_Utils_Array::value('street_number', $options['defaults'], FALSE),
+            'name' => 'street_number',
+            'crm_editable' => array(
+              'id_table' => 'civicrm_address',
+              'id_field' => 'id',
+              'entity' => 'address',
+            ),
+          ),
+          $options['prefix'] . 'street_name' => array(
+            'name' => 'street_name',
+            'title' => ts($options['prefix_label'] . 'Street Name'),
+            'type' => 1,
+            'default' => CRM_Utils_Array::value('street_name', $options['defaults'], FALSE),
+            'name' => 'street_name',
+            'crm_editable' => array(
+              'id_table' => 'civicrm_address',
+              'id_field' => 'id',
+              'entity' => 'address',
+            ),
+          ),
           $options['prefix'] . 'street_address' => array(
             'title' => ts($options['prefix_label'] . 'Street Address'),
             'default' => CRM_Utils_Array::value('street_address', $options['defaults'], FALSE),
@@ -2705,25 +2742,21 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
             'title' => ts($options['prefix_label'] . 'Supplementary Address Field 1'),
             'default' => CRM_Utils_Array::value('supplemental_address_1', $options['defaults'], FALSE),
             'name' => 'supplemental_address_1',
+            'crm_editable' => array(
+              'id_table' => 'civicrm_address',
+              'id_field' => 'id',
+              'entity' => 'address',
+            ),
           ),
           $options['prefix'] . 'supplemental_address_2' => array(
             'title' => ts($options['prefix_label'] . 'Supplementary Address Field 2'),
             'default' => CRM_Utils_Array::value('supplemental_address_2', $options['defaults'], FALSE),
             'name' => 'supplemental_address_2',
-          ),
-          $options['prefix'] . 'street_number' => array(
-            'name' => 'street_number',
-            'title' => ts($options['prefix_label'] . 'Street Number'),
-            'type' => 1,
-            'default' => CRM_Utils_Array::value('street_number', $options['defaults'], FALSE),
-            'name' => 'street_number',
-          ),
-          $options['prefix'] . 'street_name' => array(
-            'name' => 'street_name',
-            'title' => ts($options['prefix_label'] . 'Street Name'),
-            'type' => 1,
-            'default' => CRM_Utils_Array::value('street_name', $options['defaults'], FALSE),
-            'name' => 'street_name',
+            'crm_editable' => array(
+              'id_table' => 'civicrm_address',
+              'id_field' => 'id',
+              'entity' => 'address',
+            ),
           ),
           $options['prefix'] . 'street_unit' => array(
             'name' => 'street_unit',
@@ -2736,6 +2769,11 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
             'title' => ts($options['prefix_label'] . 'City'),
             'default' => CRM_Utils_Array::value('city', $options['defaults'], FALSE),
             'name' => 'city',
+            'crm_editable' => array(
+              'id_table' => 'civicrm_address',
+              'id_field' => 'id',
+              'entity' => 'address',
+            ),
           ),
           $options['prefix'] . 'postal_code' => array(
             'title' => ts($options['prefix_label'] . 'Postal Code'),
@@ -2759,6 +2797,9 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
             'default' => CRM_Utils_Array::value('country_id', $options['defaults'], FALSE),
             'alter_display' => 'alterCountryID',
             'name' => 'country_id',
+          ),
+          $options['prefix'] . 'id' => array(
+            'title' => ts($options['prefix_label'] . 'ID'),
           ),
         ),
         'grouping' => 'location-fields',
@@ -3143,6 +3184,11 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
         'rightTable' => 'civicrm_address',
         'callback' => 'joinAddressFromContact',
       ),
+     'contact_from_address' => array(
+       'leftTable' => 'civicrm_address',
+       'rightTable' => 'civicrm_contact',
+       'callback' => 'joinContactFromAddress',
+      ),
       'email_from_contact' => array(
         'leftTable' => 'civicrm_contact',
         'rightTable' => 'civicrm_email',
@@ -3185,7 +3231,19 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
     ";
     return true;
   }
+ /**
+  * Add join from address table to contact.
+  * @param string $prefix prefix to add to table names
+  * @param array $extra extra join parameters
+  * @return bool true or false to denote whether extra filters can be appended to join
+  */
+  function joinContactFromAddress( $prefix = '', $extra = array()) {
 
+    $this->_from .= " LEFT JOIN civicrm_contact {$this->_aliases[$prefix . 'civicrm_contact']}
+    ON {$this->_aliases[$prefix . 'civicrm_address']}.contact_id = {$this->_aliases[$prefix . 'civicrm_contact']}.id
+    ";
+    return true;
+  }
   /*
   * Add join from contact table to email. Prefix will be added to both tables
   * as it's assumed you are using it to get address of a secondary contact
