@@ -1,8 +1,8 @@
 {*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.2                                                |
+ | CiviCRM version 4.3                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2012                                |
+ | Copyright CiviCRM LLC (c) 2004-2013                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -40,7 +40,7 @@
                         <tr>
                             <td>{$form.$print.html}&nbsp;&nbsp;</td>
                             <td>{$form.$pdf.html}&nbsp;&nbsp;</td>
-                            <td>{$form.$csv.html}&nbsp;&nbsp;</td>                        
+                            <td>{$form.$csv.html}&nbsp;&nbsp;</td>
                             {if $instanceUrl}
                                 <td>&nbsp;&nbsp;&raquo;&nbsp;<a href="{$instanceUrl}">{ts}Existing report(s) from this template{/ts}</a></td>
                             {/if}
@@ -48,7 +48,7 @@
                     </table>
                 </td>
                 <td>
-                    <table class="form-layout-compressed" align="right">                        
+                    <table class="form-layout-compressed" align="right">
                         {if $chartSupported}
                             <tr>
                                 <td>{$form.charts.html|crmReplace:class:big}</td>

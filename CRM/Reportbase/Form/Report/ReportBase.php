@@ -2012,7 +2012,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
     $this->addElement('submit', $this->_pdfButtonName, ts('PDF'));
 
     if ($this->_id) {
-      $this->addElement('submit', $this->_createNewButtonName, ts('Save As') . '...');
+      $this->addElement('submit', $this->_createNewButtonName, ts('Save a Copy') . '...');
     }
     if ($this->_instanceForm) {
       $this->assign('instanceForm', TRUE);
@@ -2032,7 +2032,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
 
     if (CRM_Core_Permission::check('administer Reports') && $this->_add2groupSupported) {
       $this->addElement('select', 'groups', ts('Group'),
-          array('' => ts('- select group -')) + CRM_Core_PseudoConstant::staticGroup()
+        array('' => ts('- select group -')) + CRM_Core_PseudoConstant::staticGroup()
       );
       if(!empty($this->_add2GroupcontactTables) && is_array($this->_add2GroupcontactTables) && count($this->_add2GroupcontactTables > 1)){
         $this->addElement('select', 'btn_group_contact', ts('Contact to Add'),
@@ -2048,13 +2048,14 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
     $this->addChartOptions();
     $this->addButtons(array(
         array(
-            'type' => 'submit',
-            'name' => ts('Preview Report'),
-            'isDefault' => TRUE,
+          'type' => 'submit',
+          'name' => ts('Preview Report'),
+          'isDefault' => TRUE,
         ),
-    )
+      )
     );
   }
+
   function getLineItemColumns() {
     return array(
       'civicrm_line_item' =>
@@ -3538,7 +3539,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
   function joinEntityTagFromContact($prefix = '') {
     static $tmpTableName = null;
     if(empty($tmpTableName)){
-      $tmpTableName = 'civicrm_report_temp_entity_tag' . date('his');
+      $tmpTableName = 'civicrm_report_temp_entity_tag' . date('his') . rand(1, 1000);
     }
     $sql = "CREATE {$this->_temporary} TABLE $tmpTableName
     (
@@ -3574,9 +3575,9 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
     static $tmpTableName = null;
     if(empty($tmpTableName)){
 
-    $tmpTableName = 'civicrm_report_temp_lastestActivity' . date('his');
-    $targetTable = 'civicrm_report_temp_target' . date('his');
-    $assigneeTable = 'civicrm_report_temp_assignee' . date('his');
+    $tmpTableName = 'civicrm_report_temp_lastestActivity' . date('his') . rand(1, 1000);
+    $targetTable = 'civicrm_report_temp_target' . date('his') . rand(1, 1000);
+    $assigneeTable = 'civicrm_report_temp_assignee' . date('his') . rand(1, 1000);
     $sql = "CREATE {$this->_temporary} TABLE $tmpTableName
    (
     `contact_id` INT(10) NULL,
