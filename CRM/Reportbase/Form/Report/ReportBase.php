@@ -432,28 +432,53 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
     }
   }
 
-    /*
-     * over-ridden to include clause if specified
+    /**
+     * over-ridden to include clause if specified, also to allow for unset meaning null
+     * e.g membership_end_date > now
+     * also, parent was giving incorrect results without the single quotes
      */
     function dateClause($fieldName,
-      $relative, $from, $to, $field, $fromTime = NULL, $toTime = NULL
+      $relative, $from, $to, $field, $fromTime = NULL, $toTime = NULL, $includeUnset = FALSE
     ) {
       $type = $field['type'];
-      if(empty($field['clause']))
-      {
-        return parent::dateClause($fieldName,
-          $relative, $from, $to, $type, $fromTime = NULL, $toTime = NULL);
-      }
       $clauses = array();
-
       list($from, $to) = self::getFromTo($relative, $from, $to, $fromTime, $toTime);
-      eval("\$clause = \"{$field['clause']}\";");
-      $clauses[] = $clause;
-      if (!empty($clauses)) {
-        return implode(' AND ', $clauses);
+
+      if(!empty($field['clause'])) {
+        eval("\$clause = \"{$field['clause']}\";");
+        $clauses[] = $clause;
+        if (!empty($clauses)) {
+          return implode(' AND ', $clauses);
+        }
+        return NULL;
       }
-      return NULL;
+      else {
+        if (in_array($relative, array_keys($this->getOperationPair(CRM_Report_FORM::OP_DATE)))) {
+          $sqlOP = $this->getSQLOperator($relative);
+        return "( {$fieldName} {$sqlOP} )";
+      }
+
+      if ($from) {
+        $from = ($type == CRM_Utils_Type::T_DATE) ? substr($from, 0, 8) : $from;
+      if(empty($to)) {
+        $clauses[] = "( {$fieldName} >= '{$from}'  OR ISNULL($fieldName))";
+      }
+      else {
+        $clauses[] = "( {$fieldName} >= '{$from}')";
+      }
     }
+
+    if ($to) {
+      $to = ($type == CRM_Utils_Type::T_DATE) ? substr($to, 0, 8) : $to;
+      $clauses[] = "( {$fieldName} <= '{$to}' )";
+    }
+
+    if (!empty($clauses)) {
+      return implode(' AND ', $clauses);
+    }
+    return NULL;
+    }
+  }
 
 
 
@@ -2038,6 +2063,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
           ),
           'end_date' => array(
             'title' => ts('Current Membership Cycle End Date'),
+            'include_null' => TRUE,
           ),
 
            'id' => array(
@@ -2065,6 +2091,12 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
             'type' => CRM_Utils_Type::T_DATE,
             'operatorType' => CRM_Report_Form::OP_DATE,
           ),
+          'membership_start_date' => array(
+            'name' => 'start_date',
+            'title' => ts('Membership Start'),
+            'type' => CRM_Utils_Type::T_DATE,
+            'operatorType' => CRM_Report_Form::OP_DATE,
+            ),
             'membership_end_date' => array(
                 'name' => 'end_date',
                 'title' => 'Membership Expiry',
@@ -3149,6 +3181,11 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
         'rightTable' => 'civicrm_membership_type',
         'callback' => 'joinMembershipTypeFromMembership',
       ),
+      'membershipStatus_from_membership' => array(
+        'leftTable' => 'civicrm_membership',
+        'rightTable' => 'civicrm_membership_status',
+        'callback' => 'joinMembershipStatusFromMembership',
+      ),
       'lineItem_from_contribution' => array(
         'leftTable' => 'civicrm_contribution',
         'rightTable' => 'civicrm_line_item',
@@ -3470,6 +3507,15 @@ LEFT JOIN civicrm_membership_type {$this->_aliases['civicrm_membership_type']}
 ON {$this->_aliases['civicrm_membership']}.membership_type_id = {$this->_aliases['civicrm_membership_type']}.id
 ";
   }
+ /**
+  *
+  */
+  function joinMembershipStatusFromMembership() {
+    $this->_from .= "
+    LEFT JOIN civicrm_membership_status {$this->_aliases['civicrm_membership_status']}
+    ON {$this->_aliases['civicrm_membership']}.status_id = {$this->_aliases['civicrm_membership_status']}.id
+    ";
+    }
 
   function joinContributionFromLineItem() {
     $temporary = $this->_temporary;
