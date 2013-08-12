@@ -3914,4 +3914,14 @@ ON ({$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participan
     $html .= "</table>";
     return $html;
   }
+  /**
+   * If in csv mode we will output line breaks
+   * @param string $value
+   */
+  function alterDisplaycsvbr2nt($value) {
+    if($this->_outputMode == 'csv') {
+      return preg_replace('/<br\\s*?\/??>/i', "\n", $value);
+    }
+    return $value;
+  }
 }
