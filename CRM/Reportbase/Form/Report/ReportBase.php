@@ -3639,6 +3639,7 @@ ON ({$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participan
    * @param array $extra
    */
   function joinContributionSummaryTableFromContact($prefix, $extra){
+    CRM_Core_DAO::executeQuery("SET group_concat_max_len=15000");
     $temporary = $this->_temporary;
     $tempTable = 'civicrm_report_temp_contsumm'. $prefix . date('d_H_I') . rand(1, 10000);
     $dropSql = "DROP TABLE IF EXISTS $tempTable";
@@ -3649,7 +3650,7 @@ ON ({$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participan
     $createSql = "
       CREATE TABLE $tempTable (
       `contact_id` INT(10) UNSIGNED NOT NULL COMMENT 'Foreign key to civicrm_contact.id .',
-      `contributionsummary{$prefix}` VARCHAR(1024) NULL DEFAULT NULL COLLATE 'utf8_unicode_ci',
+      `contributionsummary{$prefix}` longtext NULL DEFAULT NULL COLLATE 'utf8_unicode_ci',
       INDEX `contact_id` (`contact_id`)
       )
       COLLATE='utf8_unicode_ci'
@@ -3675,6 +3676,7 @@ ON ({$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participan
       GROUP BY contact_id
       ORDER BY NULL
      ";
+
       CRM_Core_DAO::executeQuery($dropSql);
       CRM_Core_DAO::executeQuery($createSql);
       CRM_Core_DAO::executeQuery($insertSql);
