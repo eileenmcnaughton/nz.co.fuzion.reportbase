@@ -2623,6 +2623,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
           'title' => $options['prefix_label'] . ts('Contribution Details'),
           'default' => TRUE,
           'required' => TRUE,
+          'alter_display' => 'alterDisplaycsvbr2nt',
         ),
 
       );
