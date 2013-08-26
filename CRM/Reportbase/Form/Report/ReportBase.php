@@ -983,6 +983,7 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
     }
     $sql = "{$this->_select} {$this->_from} {$this->_where} {$this->_groupBy} {$this->_having} {$this->_orderBy} {$this->_limit}";
     return $sql;
+
   }
 /**
  * Generate a temp table to reflect the pre-constrained report group
@@ -1395,6 +1396,7 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
         $extends = array_merge($extends, $spec['extends']);
       }
     }
+
     if(empty($extends)){
       return;
     }
@@ -1423,13 +1425,14 @@ ORDER BY cg.weight, cf.weight";
           'name' => $customDAO->table_name,
         );
         if(!isset($this->_customFields[$currentTable])) {
-          $this->_customFields[$currentTable] = array();
+          $this->_customFields[$currentTable] = $table + array('fields' => array(), 'filters' => array());
         }
       }
       $filters = array();
       $table['fields'][$fieldName] = $this->extractFieldsAndFilters($customDAO, $fieldName, $filters);
       $table['filters'][$fieldName] = $filters;
-      $this->_customFields[$currentTable] = array_merge_recursive($this->_customFields[$currentTable], $table);
+      $this->_customFields[$currentTable]['fields'] = array_merge($this->_customFields[$currentTable]['fields'], $table['fields']);
+      $this->_customFields[$currentTable]['filters'] = array_merge($this->_customFields[$currentTable]['fields'], $table['filters']);
       $fieldTableMapping[$fieldName] = $currentTable;
       $customTableMapping[$customDAO->extends][] = $currentTable;
     }
@@ -2001,6 +2004,18 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
       CRM_Core_Session::setStatus(ts("Listed contact(s) have been added to the selected group."));
     }
   }
+
+  /**
+   * check if a table exists
+   * @param string $tableName Name of table
+   */
+  function tableExists($tableName) {
+    $sql = "SHOW TABLES LIKE '{$tableName}'";
+    $result = CRM_Core_DAO::executeQuery($sql);
+    $result->fetch();
+    return $result->N ? TRUE : FALSE;
+  }
+
   /*
    * Function is over-ridden to support multiple add to groups
   */
