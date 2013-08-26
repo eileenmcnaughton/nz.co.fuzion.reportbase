@@ -2699,7 +2699,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
           'title' => $options['prefix_label'] . ts('Contribution Details'),
           'default' => TRUE,
           'required' => TRUE,
-          'alter_display' => 'alterDisplaycsvbr2nt',
+          'alter_display' => 'alterDisplaytable2csv',
         ),
 
       );
@@ -4237,6 +4237,19 @@ ON ({$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participan
   function alterDisplaycsvbr2nt($value) {
     if($this->_outputMode == 'csv') {
       return preg_replace('/<br\\s*?\/??>/i', "\n", $value);
+    }
+    return $value;
+  }
+
+  /**
+   * If in csv mode we will output line breaks in the table
+   * @param string $value
+   */
+  function alterDisplaytable2csv($value) {
+    if($this->_outputMode == 'csv') {
+     // return
+      $value = preg_replace('/<\/tr\\s*?\/??>/i', "\n", $value);
+      $value = preg_replace('/<\/td\\s*?\/??>/i', " - ", $value);
     }
     return $value;
   }
