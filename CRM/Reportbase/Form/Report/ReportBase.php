@@ -199,7 +199,7 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
       $this->setDefaultValues(FALSE);
     }
 
-    CRM_Report_Utils_Get::processFilter($this->_filters, $this->_defaults);
+    $this->processFilter($this->_filters, $this->_defaults);
     CRM_Report_Utils_Get::processGroupBy($groupBys, $this->_defaults);
     CRM_Report_Utils_Get::processFields($reportFields, $this->_defaults);
     CRM_Report_Utils_Get::processChart($this->_defaults);
@@ -1976,6 +1976,82 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
 
     return $retValue;
   }
+ /**
+  * We are experiencing CRM_Utils_Get to be broken on handling date defaults but 'fixing' doesn't seem to
+  * work well on core reports - running fn from here
+  * @param unknown_type $fieldGrp
+  * @param unknown_type $defaults
+  */
+  function processFilter(&$fieldGrp, &$defaults) {
+    // process only filters for now
+    foreach ($fieldGrp as $tableName => $fields) {
+      foreach ($fields as $fieldName => $field) {
+        switch (CRM_Utils_Array::value('type', $field)) {
+          case CRM_Utils_Type::T_INT:
+          case CRM_Utils_Type::T_MONEY:
+            CRM_Report_Utils_Get::intParam($fieldName, $field, $defaults);
+            break;
+
+          case CRM_Utils_Type::T_DATE:
+          case CRM_Utils_Type::T_DATE | CRM_Utils_Type::T_TIME:
+            $this->dateParam($fieldName, $field, $defaults);
+            break;
+
+          case CRM_Utils_Type::T_STRING:
+          default:
+            CRM_Report_Utils_Get::stringParam($fieldName, $field, $defaults);
+            break;
+        }
+      }
+    }
+  }
+
+  /**
+   * see notes on processfilter - 'fixing' this doesn't seem to work across the board
+   * @param string $fieldName
+   * @param array $field
+   * @param array $defaults
+   * @return boolean
+   */
+  function dateParam($fieldName, &$field, &$defaults) {
+    // type = 12 (datetime) is not recognized by Utils_Type::escape() method,
+    // and therefore the below hack
+    $type = 4;
+
+    $from = CRM_Report_Utils_Get::getTypedValue("{$fieldName}_from", $type);
+    $to = CRM_Report_Utils_Get::getTypedValue("{$fieldName}_to", $type);
+
+    $relative = CRM_Utils_Array::value("{$fieldName}_relative", $_GET);
+    if ($relative) {
+      list($from, $to) = CRM_Report_Form::getFromTo($relative, NULL, NULL);
+      $from = substr($from, 0, 8);
+      $to = substr($to, 0, 8);
+    }
+
+    if (!($from || $to)) {
+      return FALSE;
+    }
+
+    if ($from !== NULL) {
+      $dateFrom = CRM_Utils_Date::setDateDefaults($from);
+      if ($dateFrom !== NULL &&
+        !empty($dateFrom[0])
+      ) {
+        $defaults["{$fieldName}_from"] = date('m/d/Y', strtotime($dateFrom[0]));
+        $defaults["{$fieldName}_relative"] = 0;
+      }
+    }
+
+    if ($to !== NULL) {
+      $dateTo = CRM_Utils_Date::setDateDefaults($to);
+      if ($dateTo !== NULL &&
+        !empty($dateTo[0])
+      ) {
+        $defaults["{$fieldName}_to"] = $dateTo[0];
+        $defaults["{$fieldName}_relative"] = 0;
+      }
+    }
+  }
 
   function assignSubTotalLines(&$rows){
      foreach ($rows as $index => & $row) {
@@ -2525,8 +2601,8 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
           'receive_date' => array(
               'operatorType' => CRM_Report_Form::OP_DATE
             ),
-          'contribution_status_id' =>
-          array('title' => ts('Contribution Status'),
+          'contribution_status_id' => array(
+            'title' => ts('Contribution Status'),
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Contribute_PseudoConstant::contributionStatus(),
             'type' => CRM_Utils_Type::T_INT,
