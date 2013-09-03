@@ -2827,6 +2827,18 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
     }
   }
 
+  /**
+   * wrapper for getOptions / pseudoconstant to get contact type options
+   */
+  function getLocationTypeOptions(){
+    if(method_exists('CRM_Core_PseudoConstant', 'locationType')){
+      return CRM_Core_PseudoConstant::locationType();
+    }
+    else{
+      $result = civicrm_api3('address', 'getoptions', array('field' => 'location_type_id'));
+      return $result['values'];
+    }
+  }
 
   function getCaseColumns() {
     $config = CRM_Core_Config::singleton();
@@ -3635,6 +3647,9 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
  *
  */
   function joinEntityTagFromContact($prefix = '') {
+    if(!$this->isTableSelected($prefix . 'civicrm_tag')){
+      return;
+    }
     static $tmpTableName = null;
     if(empty($tmpTableName)){
       $tmpTableName = 'civicrm_report_temp_entity_tag' . date('his') . rand(1, 1000);
@@ -4214,7 +4229,7 @@ ON ({$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participan
    */
   function alterPhoneGroup($value) {
 
-    $locationTypes = CRM_Core_PseudoConstant::locationType();
+    $locationTypes = $this->getLocationTypeOptions();
     $phones = explode(',', $value);
     $return = array();
     $html = "<table>";
