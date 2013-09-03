@@ -2829,6 +2829,10 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
 
 
   function getCaseColumns() {
+    $config = CRM_Core_Config::singleton();
+    if (!in_array('CiviCase', $config->enableComponents)) {
+      return array();
+    }
     return array(
       'civicrm_case' => array(
         'dao' => 'CRM_Case_DAO_Case',
