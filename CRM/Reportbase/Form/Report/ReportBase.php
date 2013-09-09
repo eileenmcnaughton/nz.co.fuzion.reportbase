@@ -455,7 +455,7 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
      * also, parent was giving incorrect results without the single quotes
      */
     function dateClause($fieldName,
-      $relative, $from, $to, $field, $fromTime = NULL, $toTime = NULL, $includeUnset = FALSE
+      $relative, $from, $to, $field = NULL, $fromTime = NULL, $toTime = NULL, $includeUnset = FALSE
     ) {
       $type = $field['type'];
       $clauses = array();
