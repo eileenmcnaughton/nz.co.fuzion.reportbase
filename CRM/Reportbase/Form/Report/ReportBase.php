@@ -1150,14 +1150,16 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
 
   /*
    * We are overriding this so that we can add time if required
+   * Note that in 4.4 we could call the parent function setting $displayTime as appropriate
+   * - not sure when this became an option - ie what version
    */
-  function addDateRange( $name, $from = '_from', $to = '_to', $label = 'From:', $dateFormat = 'searchDate', $required = FALSE) {
+  function addDateRange( $name, $from = '_from', $to = '_to', $label = 'From:', $dateFormat = 'searchDate', $required = FALSE, $displayTime = FALSE) {
     if($this->_timeDateFilters){
       $this->addDateTime( $name . '_from', $label   , $required, array( 'formatType' => $dateFormat ) );
       $this->addDateTime( $name . '_to'  , ts('To:'), $required, array( 'formatType' => $dateFormat ) );
     }
     else{
-      parent::addDateRange($name, $from, $to, $label, $dateFormat, $required);
+      parent::addDateRange($name, $from, $to, $label, $dateFormat, $required, $displayTime);
     }
   }
 
