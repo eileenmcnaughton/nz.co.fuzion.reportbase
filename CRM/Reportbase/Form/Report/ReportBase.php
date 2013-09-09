@@ -1382,7 +1382,7 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
           array('id' => 'templates', 'title' => ts('- select -'),)
    );
   }
-  /*
+  /**
    * This is all just copied from the addCustomFields function -
    * The point of this is to
    * 1) put together the selection of fields using a prefix so that we can use multiple instances of the
@@ -1394,11 +1394,10 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
     $extends = $customTableMapping = array();
     if(!empty($this->_customGroupExtended)){
       //lets try to assign custom data select fields
-      foreach ($this->_customGroupExtended as $table => $spec){
+      foreach ($this->_customGroupExtended as $spec){
         $extends = array_merge($extends, $spec['extends']);
       }
     }
-
     if(empty($extends)){
       return;
     }
@@ -1418,26 +1417,22 @@ ORDER BY cg.weight, cf.weight";
       $fieldName = 'custom_' . $customDAO->cf_id;
       $currentTable = $customDAO->table_name;
       $customFieldsTableFields[$customDAO->extends][$fieldName] = $customDAO->label;
-      if(empty($table) || $table['name'] != $currentTable){
-        $table = array(
+      if(empty($this->_customFields[$currentTable])) {
+        $this->_customFields[$currentTable] = array(
           'dao' => 'CRM_Contact_DAO_Contact', // dummy dao object
           'extends' => $customDAO->extends,
           'grouping' => $customDAO->table_name,
           'group_title' => $customDAO->title,
           'name' => $customDAO->table_name,
         );
-        if(!isset($this->_customFields[$currentTable])) {
-          $this->_customFields[$currentTable] = $table + array('fields' => array(), 'filters' => array());
-        }
       }
       $filters = array();
-      $table['fields'][$fieldName] = $this->extractFieldsAndFilters($customDAO, $fieldName, $filters);
-      $table['filters'][$fieldName] = $filters;
-      $this->_customFields[$currentTable]['fields'] = array_merge($this->_customFields[$currentTable]['fields'], $table['fields']);
-      $this->_customFields[$currentTable]['filters'] = array_merge($this->_customFields[$currentTable]['fields'], $table['filters']);
+      $this->_customFields[$currentTable][$fieldName] = $this->extractFieldsAndFilters($customDAO, $fieldName, $filters);
+      $this->_customFields[$currentTable][$fieldName] = $filters;
       $fieldTableMapping[$fieldName] = $currentTable;
       $customTableMapping[$customDAO->extends][] = $currentTable;
     }
+
     /*
      * so, now we have all the information about the custom fields - let's apply it once per
      * entity
@@ -1447,9 +1442,9 @@ ORDER BY cg.weight, cf.weight";
       //lets try to assign custom data select fields
       foreach ($this->_customGroupExtended as $table => $spec){
         $customFieldsTable[$table] = $spec['title'];
-        foreach ($spec['extends'] as $entendedEntity){
-          if(array_key_exists($entendedEntity, $customTableMapping)){
-            foreach ($customTableMapping[$entendedEntity] as $customTable){
+        foreach ($spec['extends'] as $extendedEntity){
+          if(array_key_exists($extendedEntity, $customTableMapping)){
+            foreach ($customTableMapping[$extendedEntity] as $customTable){
               $tableName = $this->_customFields[$customTable]['name'];
               $tableAlias = $table . "_" . $this->_customFields[$customTable]['name'];
               $this->_columns[$tableAlias] = $this->_customFields[$tableName];
@@ -1458,7 +1453,7 @@ ORDER BY cg.weight, cf.weight";
               unset ($this->_columns[$tableAlias]['fields']);
             }
 
-            foreach ($customFieldsTableFields[$entendedEntity] as $customFieldName => $customFieldLabel){
+            foreach ($customFieldsTableFields[$extendedEntity] as $customFieldName => $customFieldLabel){
               $customFields[$table][$table . ':' . $customFieldName] = $spec['title'] . $customFieldLabel;
               $customFieldsFlat[$table . ':' . $customFieldName] = $spec['title'] . $customFieldLabel;
             }
@@ -1471,20 +1466,20 @@ ORDER BY cg.weight, cf.weight";
 
     if($this->_customGroupAggregates){
       $this->add('select', 'aggregate_column_headers', ts('Aggregate Report Column Headers'), $customFieldsFlat, FALSE,
-          array('id' => 'aggregate_column_headers',  'title' => ts('- select -'))
+        array('id' => 'aggregate_column_headers',  'title' => ts('- select -'))
       );
       $this->add('select', 'aggregate_row_headers', ts('Aggregate Report Rows'), $customFieldsFlat, FALSE,
-          array('id' => 'aggregate_row_headers',  'title' => ts('- select -'))
+        array('id' => 'aggregate_row_headers',  'title' => ts('- select -'))
       );
     }
 
     else{
       $sel = $this->add('select', 'custom_tables', ts('Custom Columns'), $customFieldsTable, FALSE,
-          array('id' => 'custom_tables', 'multiple' => 'multiple', 'title' => ts('- select -'))
+        array('id' => 'custom_tables', 'multiple' => 'multiple', 'title' => ts('- select -'))
       );
 
       $this->add('select', 'custom_fields', ts('Custom Columns'), $customFieldsFlat, FALSE,
-          array('id' => 'custom_fields', 'multiple' => 'multiple', 'title' => ts('- select -'), 'hierarchy' => json_encode($customFields))
+        array('id' => 'custom_fields', 'multiple' => 'multiple', 'title' => ts('- select -'), 'hierarchy' => json_encode($customFields))
       );
     }
   }
