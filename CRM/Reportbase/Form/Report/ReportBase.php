@@ -149,7 +149,7 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
 
             // set alias = table-name, unless already set
             $alias = isset($field['alias']) ? $field['alias'] : (isset($this->_columns[$tableName]['alias']) ?
-                     $this->_columns[$tableName]['alias'] : $tableName
+              $this->_columns[$tableName]['alias'] : $tableName
             );
             $this->_columns[$tableName][$fieldGrp][$fieldName]['alias'] = $alias;
 
@@ -167,13 +167,13 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
               !isset($this->_columns[$tableName][$fieldGrp][$fieldName]['operatorType'])
             ) {
               if (in_array($this->_columns[$tableName][$fieldGrp][$fieldName]['type'],
-                  array(CRM_Utils_Type::T_MONEY, CRM_Utils_Type::T_FLOAT)
-                )) {
+                array(CRM_Utils_Type::T_MONEY, CRM_Utils_Type::T_FLOAT)
+              )) {
                 $this->_columns[$tableName][$fieldGrp][$fieldName]['operatorType'] = CRM_Report_Form::OP_FLOAT;
               }
               elseif (in_array($this->_columns[$tableName][$fieldGrp][$fieldName]['type'],
-                  array(CRM_Utils_Type::T_INT)
-                )) {
+                array(CRM_Utils_Type::T_INT)
+              )) {
                 $this->_columns[$tableName][$fieldGrp][$fieldName]['operatorType'] = CRM_Report_Form::OP_INT;
               }
             }
@@ -333,22 +333,22 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
         if(is_array( $fromClause)){
           // we might be adding the same join more than once (should have made it an array from the start)
           $fn = $availableClauses[$clausekey]['callback'];
-           foreach ($fromClause as $fromTable => $fromSpec){
+          foreach ($fromClause as $fromTable => $fromSpec){
             $append = $this->$fn($fromTable, $fromSpec);
           }
         }
         else{
           //@todo - basically have separate handling for the string vs array scenarios
-        $fn = $availableClauses[$fromClause]['callback'];
-        $extra = array();
+          $fn = $availableClauses[$fromClause]['callback'];
+          $extra = array();
           if(isset($this->_joinFilters[$fromClause])){
             $extra = $this->_joinFilters[$fromClause];
           }
           $append = $this->$fn('', $extra);
           if($append && !empty($extra)){
-              foreach ($extra as $table => $field){
-                $this->_from .= " AND {$this->_aliases[$table]}.{$field} ";
-              }
+            foreach ($extra as $table => $field){
+              $this->_from .= " AND {$this->_aliases[$table]}.{$field} ";
+            }
           }
         }
 
@@ -505,10 +505,10 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
   function fromClauses() {
     return array();
   }
-/*
- * We're overriding the parent class so we can populate a 'group_by' array for other functions use
- * e.g. editable fields are turned off when groupby is used
- */
+  /*
+   * We're overriding the parent class so we can populate a 'group_by' array for other functions use
+   * e.g. editable fields are turned off when groupby is used
+   */
   function groupBy() {
     $this->storeGroupByArray();
     if (!empty($this->_groupByArray)) {
@@ -519,13 +519,13 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
   function orderBy() {
     parent::orderBy();
   }
-/*
- * Store group bys into array - so we can check elsewhere (e.g editable fields) what is grouped
- */
+  /*
+   * Store group bys into array - so we can check elsewhere (e.g editable fields) what is grouped
+   */
   function storeGroupByArray(){
     if (CRM_Utils_Array::value('group_bys', $this->_params) &&
-        is_array($this->_params['group_bys']) &&
-        !empty($this->_params['group_bys'])
+      is_array($this->_params['group_bys']) &&
+      !empty($this->_params['group_bys'])
     ) {
       foreach ($this->_columns as $tableName => $table) {
         if (array_key_exists('group_bys', $table)) {
@@ -568,7 +568,7 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
         if(empty($operations)){
           $operations = $this->getOperators(CRM_Utils_Array::value('operatorType', $field),
             $fieldName
-        );
+          );
         }
 
         $filters[$table][$fieldName] = $field;
@@ -604,10 +604,10 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
                 $element->freeze();
               }
               $select = $this->addElement('select', "{$fieldName}_value", NULL,
-              $field['options'], array(
-                'size' => 4,
-                'style' => 'min-width:250px',
-              )
+                $field['options'], array(
+                  'size' => 4,
+                  'style' => 'min-width:250px',
+                )
               );
               $select->setMultiple(TRUE);
             }
@@ -645,7 +645,7 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
           default:
             // default type is string
             $this->addElement('select', "{$fieldName}_op", ts('Operator:'), $operations,
-            array('onchange' => "return showHideMaxMinVal( '$fieldName', this.value );")
+              array('onchange' => "return showHideMaxMinVal( '$fieldName', this.value );")
             );
             // we need text box for value input
             $this->add('text', "{$fieldName}_value", NULL);
@@ -655,12 +655,12 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
     }
     $this->assign('filters', $filters);
   }
-/**
- * We have over-riden this to provide the option of setting single date fields with defaults
- * and the option of setting 'to', 'from' defaults on date fields
- * @param boolean $freeze
- * @return Ambigous <string, multitype:, unknown>
- */
+  /**
+   * We have over-riden this to provide the option of setting single date fields with defaults
+   * and the option of setting 'to', 'from' defaults on date fields
+   * @param boolean $freeze
+   * @return Ambigous <string, multitype:, unknown>
+   */
   function setDefaultValues($freeze = TRUE) {
     $freezeGroup = array();
     // FIXME: generalizing form field naming conventions would reduce
@@ -703,7 +703,7 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
         foreach ($table['filters'] as $fieldName => $field) {
           if (isset($field['default'])) {
             if (CRM_Utils_Array::value('type', $field) & CRM_Utils_Type::T_DATE
-               && !(CRM_Utils_Array::value('operatorType', $field) == self::OP_SINGLEDATE)) {
+              && !(CRM_Utils_Array::value('operatorType', $field) == self::OP_SINGLEDATE)) {
               if(is_array($field['default'])){
                 $this->_defaults["{$fieldName}_from"] = CRM_Utils_Array::value('from', $field['default']);
                 $this->_defaults["{$fieldName}_to"] = CRM_Utils_Array::value('to', $field['default']);
@@ -795,26 +795,35 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
     return $this->_defaults;
   }
 
-  // Note: $fieldName param allows inheriting class to build operationPairs
-  // specific to a field.
-  // we can't override getOperationPair because it is static in 4.3 & not static in 4.2 so rename
-   function getOperators($type = "string", $fieldName = NULL) {
+  /**
+   * We can't override getOperationPair because it is static in 4.3 & not static in 4.2 so
+   * use this function to effect an over-ride rename
+   *  Note: $fieldName param allows inheriting class to build operationPairs
+   * specific to a field.
+   *
+   * @param string $type
+   * @param null $fieldName
+   *
+   * @return array
+   */
+  function getOperators($type = "string", $fieldName = NULL) {
     // FIXME: At some point we should move these key-val pairs
     // to option_group and option_value table.
 
     switch ($type) {
       case CRM_Report_FORM::OP_INT:
       case CRM_Report_FORM::OP_FLOAT:
-        return array('lte' => ts('Is less than or equal to'),
-        'gte' => ts('Is greater than or equal to'),
-        'bw' => ts('Is between'),
-        'eq' => ts('Is equal to'),
-        'lt' => ts('Is less than'),
-        'gt' => ts('Is greater than'),
-        'neq' => ts('Is not equal to'),
-        'nbw' => ts('Is not between'),
-        'nll' => ts('Is empty (Null)'),
-        'nnll' => ts('Is not empty (Null)'),
+        return array(
+          'lte' => ts('Is less than or equal to'),
+          'gte' => ts('Is greater than or equal to'),
+          'bw' => ts('Is between'),
+          'eq' => ts('Is equal to'),
+          'lt' => ts('Is less than'),
+          'gt' => ts('Is greater than'),
+          'neq' => ts('Is not equal to'),
+          'nbw' => ts('Is not between'),
+          'nll' => ts('Is empty (Null)'),
+          'nnll' => ts('Is not empty (Null)'),
         );
         break;
 
@@ -823,21 +832,23 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
 
       case CRM_Report_FORM::OP_MONTH:
       case CRM_Report_FORM::OP_MULTISELECT:
-        return array('in' => ts('Is one of'),
-        'notin' => ts('Is not one of'),
+        return array(
+          'in' => ts('Is one of'),
+          'notin' => ts('Is not one of'),
         );
         break;
 
       case CRM_Report_FORM::OP_DATE:
-        return array('nll' => ts('Is empty (Null)'),
-        'nnll' => ts('Is not empty (Null)'),
+        return array(
+          'nll' => ts('Is empty (Null)'),
+          'nnll' => ts('Is not empty (Null)'),
         );
         break;
       case self::OP_SINGLEDATE:
-          return array(
-            'to' => ts('Until Date'),
-            'from' => ts('From Date'),
-          );
+        return array(
+          'to' => ts('Until Date'),
+          'from' => ts('From Date'),
+        );
         break;
       case CRM_Report_FORM::OP_MULTISELECT_SEPARATOR:
         // use this operator for the values, concatenated with separator. For e.g if
@@ -846,20 +857,24 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
 
       default:
         // type is string
-        return array('has' => ts('Contains'),
-        'sw' => ts('Starts with'),
-        'ew' => ts('Ends with'),
-        'nhas' => ts('Does not contain'),
-        'eq' => ts('Is equal to'),
-        'neq' => ts('Is not equal to'),
-        'nll' => ts('Is empty (Null)'),
-        'nnll' => ts('Is not empty (Null)'),
+        return array(
+          'has' => ts('Contains'),
+          'sw' => ts('Starts with'),
+          'ew' => ts('Ends with'),
+          'nhas' => ts('Does not contain'),
+          'eq' => ts('Is equal to'),
+          'neq' => ts('Is not equal to'),
+          'nll' => ts('Is empty (Null)'),
+          'nnll' => ts('Is not empty (Null)'),
         );
     }
   }
 
-
-
+  /**
+   * @param $rows
+   *
+   * @return mixed
+   */
   function statistics(&$rows) {
     return parent::statistics($rows);
   }
@@ -883,11 +898,11 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
     // format result set.
     $this->formatDisplay($rows);
 
-    // assign variables to templates
-    $this->doTemplateAssignment($rows);
+      // assign variables to templates
+      $this->doTemplateAssignment($rows);
 
-    // do print / pdf / instance stuff if needed
-    $this->endPostProcess($rows);
+      // do print / pdf / instance stuff if needed
+      $this->endPostProcess($rows);
     } catch(Exception $e) {
       $err['message'] = $e->getMessage();
       $err['trace'] = $e->getTrace();
@@ -898,7 +913,7 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
             $err['sql_error'] = $arg;
           }
         }
-      if($fn['function'] == 'simpleQuery'){
+        if($fn['function'] == 'simpleQuery'){
           foreach ($fn['args'] as $arg){
             $err['sql_query'] = $arg;
           }
@@ -908,7 +923,7 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
       if(function_exists('dpm')){
         dpm ($err);
         dpm($this->_columns);
-;      }
+        ;      }
       else{
         CRM_Core_Error::debug($err);
       }
@@ -945,11 +960,11 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
     $this->processReportMode();
   }
 
-/**
- * Over-written to allow pre-constraints
- * @param boolean $applyLimit
- * @return string
- */
+  /**
+   * Over-written to allow pre-constraints
+   * @param boolean $applyLimit
+   * @return string
+   */
 
   function buildQuery($applyLimit = TRUE) {
     $this->select();
@@ -983,18 +998,17 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
     }
     $sql = "{$this->_select} {$this->_from} {$this->_where} {$this->_groupBy} {$this->_having} {$this->_orderBy} {$this->_limit}";
     return $sql;
-
   }
-/**
- * Generate a temp table to reflect the pre-constrained report group
- * This could be a group of contacts on whom we are going to do a series of contribution
- * comparisons.
- *
- * We apply where criteria from the form to generate this
- *
- * We create a temp table of their ids in the first instance
- * and use this as the base
- */
+  /**
+   * Generate a temp table to reflect the pre-constrained report group
+   * This could be a group of contacts on whom we are going to do a series of contribution
+   * comparisons.
+   *
+   * We apply where criteria from the form to generate this
+   *
+   * We create a temp table of their ids in the first instance
+   * and use this as the base
+   */
   function generateTempTable(){
     $tempTable = 'civicrm_report_temp_' . $this->_baseTable . date('d_H_I') . rand(1, 10000);
     $sql = "CREATE {$this->_temporary} TABLE $tempTable
@@ -1019,13 +1033,13 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
    */
   function endPostProcess(&$rows = NULL) {
     if ($this->_outputMode == 'print' ||
-        $this->_outputMode == 'pdf' ||
-        $this->_sendmail
+      $this->_outputMode == 'pdf' ||
+      $this->_sendmail
     ) {
 
       $content = $this->compileContent();
       $url = CRM_Utils_System::url("civicrm/report/instance/{$this->_id}",
-      "reset=1", TRUE
+        "reset=1", TRUE
       );
 
       if ($this->_sendmail) {
@@ -1112,7 +1126,7 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
       CRM_Report_Form_Instance::postProcess($this);
     }
     elseif ($this->_createNewButtonName == $this->controller->getButtonName() ||
-        $this->_outputMode == 'create_report' ) {
+      $this->_outputMode == 'create_report' ) {
       $this->_createNew = TRUE;
       CRM_Report_Form_Instance::postProcess($this);
     }
@@ -1134,7 +1148,7 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
       $defaultTpl = 'CRM/Report/Form.tpl';
     }
     if(CRM_Utils_Array::value('templates', $this->_params) ==1){
-     //
+      //
     }
     return $defaultTpl;
   }
