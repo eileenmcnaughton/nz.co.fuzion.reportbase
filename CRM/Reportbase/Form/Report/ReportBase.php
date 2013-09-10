@@ -1441,8 +1441,8 @@ ORDER BY cg.weight, cf.weight";
         );
       }
       $filters = array();
-      $this->_customFields[$currentTable][$fieldName] = $this->extractFieldsAndFilters($customDAO, $fieldName, $filters);
-      $this->_customFields[$currentTable][$fieldName] = $filters;
+      $this->_customFields[$currentTable]['fields'][$fieldName] = $this->extractFieldsAndFilters($customDAO, $fieldName, $filters);
+      $this->_customFields[$currentTable]['filters'][$fieldName] = $filters;
       $fieldTableMapping[$fieldName] = $currentTable;
       $customTableMapping[$customDAO->extends][] = $currentTable;
     }
