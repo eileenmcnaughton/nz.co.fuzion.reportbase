@@ -1086,8 +1086,8 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
         }
 
         CRM_Utils_System::redirect(CRM_Utils_System::url(CRM_Utils_System::currentPath(),
-        'reset=1'
-            ));
+          'reset=1'
+        ));
       }
       elseif ($this->_outputMode == 'print') {
         echo $content;
@@ -1659,25 +1659,25 @@ ORDER BY cg.weight, cf.weight";
 
     return FALSE;
   }
-  /*
+  /**
    * Function extracts the custom fields array where it is preceded by a table prefix
    * This allows us to include custom fields from multiple contacts (for example) in one report
    */
-  function extractCustomFields( &$customfields, &$selectedTables, $context = 'select'){
-
+  function extractCustomFields( &$customFields, &$selectedTables, $context = 'select'){
+    $myColumns = array();
     foreach ($this->_customFields as $tableName => $table) {
       if (array_key_exists('fields', $table)) {
-        $selectedFields = array_intersect_key($customfields, $table['fields']);
-        foreach ($selectedFields  as $fieldName => $selectedfield) {
-          foreach ($selectedfield as $index => $instance){
+        $selectedFields = array_intersect_key($customFields, $table['fields']);
+        foreach ($selectedFields  as $fieldName => $selectedField) {
+          foreach ($selectedField as $index => $instance){
             if(!empty($table['fields'][$fieldName])){
               $customFieldsToTables[$fieldName] = $tableName;
-              $fieldAlias = $customfields[$fieldName][$index] . "_" . $fieldName;
-              $tableAlias = $customfields[$fieldName][$index]  . "_" . $tableName . '_civireport';
-              $title = $this->_customGroupExtended[$customfields[$fieldName][$index]]['title']  . $table['fields'][$fieldName]['title'];
+              $fieldAlias = $customFields[$fieldName][$index] . "_" . $fieldName;
+              $tableAlias = $customFields[$fieldName][$index]  . "_" . $tableName . '_civireport';
+              $title = $this->_customGroupExtended[$customFields[$fieldName][$index]]['title']  . $table['fields'][$fieldName]['title'];
               $selectedTables[$tableAlias] = array(
-                  'name' => $tableName,
-                  'extends_table' => $customfields[$fieldName][$index]);
+                'name' => $tableName,
+                'extends_table' => $customFields[$fieldName][$index]);
               // these should be in separate functions
               if($context == 'select'){
                 $this->_select .= ", {$tableAlias}.{$table['fields'][$fieldName]['name']} as $fieldAlias ";
@@ -1691,12 +1691,12 @@ ORDER BY cg.weight, cf.weight";
                 $this->addColumnAggregateSelect($table['fields'][$fieldName]['name'], $tableAlias, $table['fields'][$fieldName]);
               }
               // we compile the columns here but add them @ the end to preserve order
-              $myColumns[$customfields[$fieldName][$index] . ":" . $fieldName] = array(
-                  'name' => $customfields[$fieldName][$index] . "_" . $fieldName,
-                  $customfields[$fieldName][$index] . "_" . $fieldName => array(
-                      'title' => $title,
-                      'type' => $table['fields'][$fieldName]['type'],
-                  )
+              $myColumns[$customFields[$fieldName][$index] . ":" . $fieldName] = array(
+                'name' => $customFields[$fieldName][$index] . "_" . $fieldName,
+                $customFields[$fieldName][$index] . "_" . $fieldName => array(
+                  'title' => $title,
+                  'type' => CRM_Utils_Array::value('type', $table['fields'][$fieldName], 'String'),
+                )
               );
             }
           }
@@ -3820,7 +3820,7 @@ ON pp.membership_id = {$this->_aliases['civicrm_membership']}.id
     ON {$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_contribution']}.contact_id
     AND {$this->_aliases['civicrm_contribution']}.is_test = 0
   ";
-    }
+  }
 
 /**
 * Define join from Participant to Contribution table
