@@ -462,6 +462,7 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
       list($from, $to) = self::getFromTo($relative, $from, $to, $fromTime, $toTime);
 
       if(!empty($field['clause'])) {
+        $clause = '';
         eval("\$clause = \"{$field['clause']}\";");
         $clauses[] = $clause;
         if (!empty($clauses)) {
@@ -3141,6 +3142,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
               'id_field' => 'id',
               'entity' => 'address',
             ),
+          ),
           $options['prefix'] . 'street_number' => array(
             'name' => 'street_number',
             'title' => ts($options['prefix_label'] . 'Street Number'),
