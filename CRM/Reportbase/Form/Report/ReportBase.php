@@ -1676,7 +1676,10 @@ ORDER BY cg.weight, cf.weight";
    * than improving the code - so this should be set up so that the select & the FROM are not BOTH done from the from function
    */
   function selectableCustomDataFrom() {
-    $customFields = $this->_params['custom_fields'];
+    $customFields = CRM_Utils_Array::value('custom_fields', $this->_params);
+    if(empty($customFields)) {
+      return;
+    }
     foreach($this->_params as $key => $param) {
       if(substr($key, 0, 7) == 'custom_') {
         $splitField = explode('_', $key);
