@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @property mixed _aliases
+ * @property mixed deleted_labels
+ */
 class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
   protected $_addressField = FALSE;
 
@@ -31,15 +35,15 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
   */
   CONST OP_DATETIME    = 5;
 
-  /*
+  /**
    * array of extended custom data fields. this is populated by functions like getContactColunmns
    */
   protected $_customGroupExtended = array();
-  /*
+  /**
    * Change time filters to time date filters by setting this to 1
    */
   protected $_timeDateFilters = FALSE;
-  /*
+  /**
    * Use $temporary to choose whether to generate permanent or temporary tables
    * ie. for debugging it's good to set to ''
    */
@@ -361,9 +365,9 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
     }
   }
 
-  /*
-* From clause build where baseTable & fromClauses are defined
-*/
+  /**
+   * From clause build where baseTable & fromClauses are defined
+   */
   function from() {
     if (!empty($this->_baseTable)) {
       if(!empty($this->_aliases['civicrm_contact'])){
@@ -1267,10 +1271,10 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
         $this->_columns[$curTable]['group_title'] = $customDAO->title;
 
         foreach (array(
-          'fields',
-          'filters',
-          'group_bys'
-        ) as $colKey) {
+                   'fields',
+                   'filters',
+                   'group_bys'
+                 ) as $colKey) {
           if (! array_key_exists($colKey, $this->_columns[$curTable])) {
             $this->_columns[$curTable][$colKey] = array();
           }
@@ -1442,6 +1446,7 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
       array('id' => 'templates', 'title' => ts('- select -'),)
     );
   }
+
   /**
    * This is all just copied from the addCustomFields function -
    * The point of this is to
@@ -1677,7 +1682,7 @@ ORDER BY cg.weight, cf.weight";
         $splitField = explode('_', $key);
         $field = $splitField[0] . '_' . $splitField[1];
         foreach($this->_columns as $table => $spec) {
-          if(array_key_exists($field, $spec['filters']) && $this->_params[$field . '_value'] != NULL) {
+          if(is_array($spec['filters']) && array_key_exists($field, $spec['filters']) && $this->_params[$field . '_value'] != NULL) {
             // we will just support activity & source contact customfields for now
             //@todo these lines are looking pretty hard-coded
             if($spec['filters'][$key]['extends'] == 'Activity') {
@@ -1981,17 +1986,17 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
       case 'String':
       case 'Int':
         if (in_array($htmlType, array(
-        'Text', 'TextArea', 'Select'))) {
+          'Text', 'TextArea', 'Select'))) {
           $retValue = $value;
-        if($htmlType == 'Select') {
-          $options = civicrm_api('custom_field', 'getoptions', array('version' =>3, 'field' => 'custom_28'));
-          $options = $options['values'];
-          $options['selected'] = $value;
-          $extra = "data-type='select' data-options='" . json_encode($options)  . "'";
-          $value = $options[$value];
-        }
+          if($htmlType == 'Select') {
+            $options = civicrm_api('custom_field', 'getoptions', array('version' =>3, 'field' => 'custom_28'));
+            $options = $options['values'];
+            $options['selected'] = $value;
+            $extra = "data-type='select' data-options='" . json_encode($options)  . "'";
+            $value = $options[$value];
+          }
           if(!empty($entity_field)){
-          //$
+            //$
             $retValue = "<div id={$entity}-{$entityID} class='crm-entity'>
           <span class='crm-editable crmf-custom_{$customField['id']} crm-editable' data-action='create' $extra >" . $value . "</span></div>";
           }
@@ -2177,9 +2182,9 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
     return $result->N ? TRUE : FALSE;
   }
 
-  /*
+  /**
    * Function is over-ridden to support multiple add to groups
-  */
+   */
   function buildInstanceAndButtons() {
     CRM_Report_Form_Instance::buildForm($this);
 
@@ -3186,7 +3191,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
               'id_table' => 'civicrm_address',
               'id_field' => 'id',
               'entity' => 'address',
-          ),
+            ),
           ),
           $options['prefix'] . 'supplemental_address_2' => array(
             'title' => ts($options['prefix_label'] . 'Supplementary Address Field 2'),
@@ -3196,7 +3201,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
               'id_table' => 'civicrm_address',
               'id_field' => 'id',
               'entity' => 'address',
-          ),
+            ),
           ),
           $options['prefix'] . 'street_number' => array(
             'name' => 'street_number',
@@ -3227,7 +3232,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
               'id_table' => 'civicrm_address',
               'id_field' => 'id',
               'entity' => 'address',
-          ),
+            ),
           ),
           $options['prefix'] . 'postal_code' => array(
             'title' => ts($options['prefix_label'] . 'Postal Code'),
@@ -3254,7 +3259,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
           ),
           $options['prefix'] . 'id' => array(
             'title' => ts($options['prefix_label'] . 'ID'),
-        ),
+          ),
         ),
         'grouping' => 'location-fields',
       ),
@@ -4337,6 +4342,13 @@ ON ({$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participan
     }
   }
 
+  /**
+   * @param $value
+   * @param $row
+   * @param $fieldname
+   *
+   * @return mixed
+   */
   function alterContactID($value, &$row, $fieldname) {
     $nameField = substr($fieldname,0, -2) . 'name';
     if(array_key_exists($nameField, $row)) {
@@ -4348,6 +4360,11 @@ ON ({$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participan
     return $value;
   }
 
+  /**
+   * @param $value
+   *
+   * @return mixed
+   */
   function alterParticipantStatus($value) {
     if (empty($value)) {
       return;
@@ -4355,6 +4372,11 @@ ON ({$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participan
     return CRM_Event_PseudoConstant::participantStatus($value, FALSE, 'label');
   }
 
+  /**
+   * @param $value
+   *
+   * @return string
+   */
   function alterParticipantRole($value) {
     if (empty($value)) {
       return;
@@ -4367,21 +4389,36 @@ ON ({$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participan
     return implode(', ', $value);
   }
 
+  /**
+   * @param $value
+   *
+   * @return mixed
+   */
   function alterPaymentType($value) {
     $paymentInstruments = CRM_Contribute_PseudoConstant::paymentInstrument();
     return $paymentInstruments[$value];
   }
 
+  /**
+   * @param $value
+   *
+   * @return mixed
+   */
   function alterActivityType($value) {
     $activityTypes = $activityType   = CRM_Core_PseudoConstant::activityType(TRUE, TRUE, FALSE, 'label', TRUE);
     return $activityTypes[$value];
   }
 
+  /**
+   * @param $value
+   *
+   * @return mixed
+   */
   function alterActivityStatus($value) {
     $activityStatuses  = CRM_Core_PseudoConstant::activityStatus();
     return $activityStatuses[$value];
   }
-  /*
+  /**
    * We are going to convert phones to an array
    */
   function alterPhoneGroup($value) {
@@ -4406,9 +4443,13 @@ ON ({$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participan
     $html .= "</table>";
     return $html;
   }
+
   /**
    * If in csv mode we will output line breaks
+   *
    * @param string $value
+   *
+   * @return mixed|string
    */
   function alterDisplaycsvbr2nt($value) {
     if($this->_outputMode == 'csv') {
@@ -4419,7 +4460,10 @@ ON ({$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participan
 
   /**
    * If in csv mode we will output line breaks in the table
+   *
    * @param string $value
+   *
+   * @return mixed|string
    */
   function alterDisplaytable2csv($value) {
     if($this->_outputMode == 'csv') {
