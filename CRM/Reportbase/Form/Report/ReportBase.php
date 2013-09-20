@@ -1682,7 +1682,7 @@ ORDER BY cg.weight, cf.weight";
         $splitField = explode('_', $key);
         $field = $splitField[0] . '_' . $splitField[1];
         foreach($this->_columns as $table => $spec) {
-          if(is_array($spec['filters']) && array_key_exists($field, $spec['filters']) && $this->_params[$field . '_value'] != NULL) {
+          if(!empty($spec['filters']) && is_array($spec['filters']) && array_key_exists($field, $spec['filters']) && isset($this->_params[$field . '_value']) && $this->_params[$field . '_value'] != NULL) {
             // we will just support activity & source contact customfields for now
             //@todo these lines are looking pretty hard-coded
             if($spec['filters'][$key]['extends'] == 'Activity') {
@@ -2850,16 +2850,20 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
         )
       );
       $individualFields = array(
-        'first_name' => array(
+        $options['prefix'] . 'first_name' => array(
+          'name' => 'first_name',
           'title' => ts($options['prefix_label'] . 'First Name'),
         ),
-        'middle_name' => array(
+        $options['prefix'] . 'middle_name' => array(
+          'name' => 'middle_name',
           'title' => ts($options['prefix_label'] . 'Middle Name'),
         ),
-        'last_name' => array(
+        $options['prefix'] . 'last_name' => array(
+          'name' => 'last_name',
           'title' => ts($options['prefix_label'] . 'Last Name'),
         ),
-        'nick_name' => array(
+        $options['prefix'] . 'nick_name' => array(
+          'name' => 'nick_name',
           'title' => ts($options['prefix_label'] . 'Nick Name'),
           'alter_display' => 'alterNickName',
         ),
@@ -3259,6 +3263,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
           ),
           $options['prefix'] . 'id' => array(
             'title' => ts($options['prefix_label'] . 'ID'),
+            'name' => 'id',
           ),
         ),
         'grouping' => 'location-fields',
