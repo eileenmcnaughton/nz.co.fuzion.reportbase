@@ -210,6 +210,7 @@ class barchart extends chart {
   protected $yAxisName = null;
   protected $ylabelAngle = null;
   protected $xlabels = null;
+  protected $xlabelSize = 8;
   /**
  *
  * @param array $params
@@ -287,7 +288,7 @@ class barchart extends chart {
     // add x axis legend.
     if ($this->xAxisName) {
       $xLegend = new x_legend($this->xAxisName);
-      $xLegend->set_style("{font-size: 13px; color:#000000; font-family: Verdana; text-align: center;}");
+      $xLegend->set_style("{font-size: 13px; color:#000000; font-family: Verdana; text-align: left;}");
       $this->chart->set_x_legend($xLegend);
     }
 
@@ -297,18 +298,12 @@ class barchart extends chart {
       $yLegend->set_style("{font-size: 13px; color:#000000; font-family: Verdana; text-align: center;}");
       $this->chart->set_y_legend($yLegend);
     }
-    // create x axis label obj. @todo - this the setting of labels to xlabels ma
-    $xLabels = $this->setXLabels();
 
-    // set angle for labels.
-    if ($this->xlabelAngle) {
-      $xLabels->rotate($this->xlabelAngle);
-    }
 
     // create x axis obj.
     $this->xAxis = new x_axis();
+    $xLabels = $this->setXLabels();
     $this->xAxis->set_labels($xLabels);
-
     //create y axis and set range.
     $this->yAxis = new y_axis();
     $this->yAxis->set_range($this->yMin, $this->yMax, $this->ySteps);
@@ -317,11 +312,15 @@ class barchart extends chart {
   /**
    *
    * Set the xLabels
+   * Note we can no longer set angle for labels as openFlashPlayer
+   * doesn't seem to render it anymore - presumably after being upgraded
+   *  I think the fonts would need to be embedded
    * @return object x_axis_labels
    */
   function setXLabels(){
     $xLabels = new x_axis_labels();
     $xLabels->set_labels($this->xlabels);
+    $xLabels->set_size($this->xlabelSize);
     return $xLabels;
   }
 }
@@ -375,16 +374,6 @@ class barChartStack extends barchart {
     }
   }
 
-  /**
-   *
-   * Set the tool tip
-   * @param string $tip
-   */
-  function setXLabels(){
-    $xLabels = new x_axis_labels();
-    $xLabels->set_labels($this->xlabels);
-    return $xLabels;
-  }
 
 /**
  *
