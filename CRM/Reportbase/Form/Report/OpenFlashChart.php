@@ -137,6 +137,7 @@ class chart {
       return $chart;
     }
     $this->chartTitle = CRM_Utils_Array::value('title', $params);
+    $this->xlabelAngle = CRM_Utils_Array::value('xlabelAngle', $params, 0);
     $this->createChartElement();
     $this->setChartValues();
     $this->setToolTip(CRM_Utils_Array::value('tip', $params));
@@ -220,7 +221,6 @@ class barchart extends chart {
     $this->setYMaxYSteps();
     $this->xAxisName = CRM_Utils_Array::value('xname', $params);
     $this->yAxisName = CRM_Utils_Array::value('yname', $params);
-    $this->xlabelAngle = CRM_Utils_Array::value('xlabelAngle', $params, 30);
     $this->xlabels = CRM_Utils_Array::value('xlabels', $params);
     $this->chartTitle = CRM_Utils_Array::value('legend', $params, ts('Bar Chart'));
     // call user define function to handle on click event.
@@ -321,6 +321,9 @@ class barchart extends chart {
     $xLabels = new x_axis_labels();
     $xLabels->set_labels($this->xlabels);
     $xLabels->set_size($this->xlabelSize);
+    if($this->xlabelAngle) {
+      $xLabels->rotate($this->xlabelAngle);
+    }
     return $xLabels;
   }
 }
