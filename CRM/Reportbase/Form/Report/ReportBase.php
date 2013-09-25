@@ -2905,6 +2905,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
           'default_order' => 'ASC',
           'name' => 'sort_name',
         ),
+        /*
         $options['prefix'] . 'first_name' => array(
           'title' => ts($options['prefix_label'] . 'First Name'),
           'default' => '0',
@@ -2936,6 +2937,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
           'title' => ts($options['prefix_label'] . 'Source'),
           'name' => 'external_identifier',
         )
+        */
       );
     }
 
