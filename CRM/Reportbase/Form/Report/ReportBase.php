@@ -1050,7 +1050,6 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
     $this->select();
     $this->from();
     $this->customDataFrom();
-    $this->selectableCustomDataFrom();
     $this->where();
     if($this->_preConstrain && !$this->_preConstrained){
       $this->generateTempTable();
@@ -1720,10 +1719,13 @@ ORDER BY cg.weight, cf.weight";
           if(!empty($spec['filters'])
             && is_array($spec['filters'])
             && array_key_exists($field, $spec['filters'])
-            && isset($this->_params[$field . '_value'])
-            && $this->_params[$field . '_value'] != NULL) {
+            && (isset($this->_params[$field . '_value'])
+              && $this->_params[$field . '_value'] != NULL) ||
+              $this->_params[$field . '_op'] == 'nll'
+              ) {
             // we will just support activity & source contact customfields for now
             //@todo these lines are looking pretty hard-coded
+
             if($spec['extends'] == 'Activity') {
               $fieldString = 'contact_activity:' . $field;
             }
@@ -1797,7 +1799,7 @@ ORDER BY cg.weight, cf.weight";
                 'name' => $tableName,
                 'extends_table' => $customFields[$fieldName][$index]);
               // these should be in separate functions
-              if($context == 'select'){
+              if($context == 'select' && (!$this->_preConstrain || $this->_preConstrained)){
                 $this->_select .= ", {$tableAlias}.{$table['fields'][$fieldName]['name']} as $fieldAlias ";
               }
               if($context == 'row_header'){
