@@ -2757,6 +2757,11 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
           'type' => CRM_Utils_Type::T_INT,
           'options' => CRM_Campaign_BAO_Campaign::getCampaigns(),
         ),
+        'source' => array(
+          'title' => ts('Contribution Source'),
+          'type' => CRM_Utils_Type::T_STRING,
+          'operatorType' => CRM_Report_Form::OP_STRING,
+        )
         /*          'contribution_is_test' =>  array(
                     'type' => CRM_Report_Form::OP_INT,
                     'operatorType' => CRM_Report_Form::OP_SELECT,
