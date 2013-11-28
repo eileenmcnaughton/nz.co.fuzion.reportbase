@@ -2509,44 +2509,47 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
     if(!empty($options['fields'])){
       $membershipFields[$options['prefix'] . 'civicrm_membership']['fields'] = array(
         $options['prefix'] . 'membership_type_id' => array(
-          'title' => 'Membership Type',
+          'title' => $options['prefix_label'] . ts('Membership Type'),
           'alter_display' => 'alterMembershipTypeID',
           'name' => 'membership_type_id',
         ),
         $options['prefix'] . 'status_id' => array(
-          'title' => 'Membership Status',
+          'title' => $options['prefix_label'] . ts('Membership Status'),
           'alter_display' => 'alterMembershipStatusID',
           'name' => 'status_id',
         ),
-        $options['prefix'] . 'join_date' => NULL,
+        $options['prefix'] . 'join_date' => array(
+          'title' => $options['prefix_label'] . ts('Join Date'),
+          'name' => 'join_date',
+        ),
         $options['prefix'] . 'start_date' => array(
-          'title' => ts('Current Cycle Start Date'),
+          'title' => $options['prefix_label'] . ts('Current Cycle Start Date'),
           'name' => 'start_date',
         ),
         $options['prefix'] . 'end_date' => array(
-          'title' => ts('Current Membership Cycle End Date'),
+          'title' => $options['prefix_label'] . ts('Current Membership Cycle End Date'),
           'include_null' => TRUE,
           'name' => 'end_date',
         ),
-        $options['prefix'] . 'id' => array(
-          'title' => 'Membership ID / Count',
+        $options['prefix'] . 'membership_id' => array(
+          'title' => $options['prefix_label'] . ts('Membership ID / Count'),
           'name' => 'id',
-          'statistics' => array('count' => ts('Number of Memberships')),
+          'statistics' => array('count' => $options['prefix_label'] . ts('Number of Memberships')),
         ),
       );
     }
     if(!empty($options['group_by'])){
       $membershipFields[$options['prefix'] . 'civicrm_membership']['group_bys'] = array(
         $options['prefix'] . 'membership_type_id' => array(
-          'title' => ts('Membership Type'),
+          'title' => $options['prefix_label'] . ts('Membership Type'),
           'name' => 'membership_type_id',
         ),
         $options['prefix'] . 'status_id' => array(
-          'title' => ts('Membership Status'),
+          'title' => $options['prefix_label'] . ts('Membership Status'),
           'name' => 'status_id',
         ),
         $options['prefix'] . 'end_date' => array(
-          'title' => 'Current Membership Cycle End Date',
+          'title' => $options['prefix_label'] . ts('Current Membership Cycle End Date'),
           'frequency' => TRUE,
           'type' => CRM_Utils_Type::T_DATE,
           'name' => 'end_date',
@@ -2559,22 +2562,23 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
            'type' => CRM_Utils_Type::T_DATE,
            'operatorType' => CRM_Report_Form::OP_DATE,
            'name' => 'join_date',
+           'title' => $options['prefix_label'] . ts('Join Date'),
          ),
          $options['prefix'] . 'membership_start_date' => array(
            'name' => 'start_date',
-           'title' => ts('Membership Start'),
+           'title' => $options['prefix_label'] . ts('Membership Start'),
            'type' => CRM_Utils_Type::T_DATE,
            'operatorType' => CRM_Report_Form::OP_DATE,
          ),
          $options['prefix'] . 'membership_end_date' => array(
            'name' => 'end_date',
-           'title' => 'Membership Expiry',
+           'title' => $options['prefix_label'] . ts('Membership Expiry'),
            'type' => CRM_Utils_Type::T_DATE,
            'operatorType' => CRM_Report_Form::OP_DATE,
          ),
          $options['prefix'] . 'membership_status_id' => array(
            'name' => 'status_id',
-           'title' => 'Membership Status',
+           'title' => $options['prefix_label'] . ts('Membership Status'),
            'type' => CRM_Utils_Type::T_INT,
            'options' => CRM_Member_PseudoConstant::membershipStatus(),
            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
