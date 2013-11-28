@@ -2487,79 +2487,103 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
     );
   }
 
-  function getMembershipColumns() {
-    return array(
-      'civicrm_membership' => array(
-        'dao' => 'CRM_Member_DAO_Membership',
-        'grouping' => 'member-fields',
-        'fields' => array(
-
-          'membership_type_id' => array(
-            'title' => 'Membership Type',
-            'alter_display' => 'alterMembershipTypeID',
-
-          ),
-          'status_id' => array(
-            'title' => 'Membership Status',
-            'alter_display' => 'alterMembershipStatusID',
-          ),
-          'join_date' => NULL,
-          'start_date' => array(
-            'title' => ts('Current Cycle Start Date'),
-          ),
-          'end_date' => array(
-            'title' => ts('Current Membership Cycle End Date'),
-            'include_null' => TRUE,
-          ),
-
-          'id' => array(
-            'title' => 'Membership ID / Count',
-            'name' => 'id',
-            'statistics' =>
-            array('count' => ts('Number of Memberships')),
-          ),
-        ),
-        'group_bys' => array(
-          'membership_type_id' => array(
-            'title' => ts('Membership Type'),
-          ),
-          'status_id' => array(
-            'title' => ts('Membership Status'),
-          ),
-          'end_date' => array(
-            'title' => 'Current Membership Cycle End Date',
-            'frequency' => TRUE,
-            'type' => CRM_Utils_Type::T_DATE,
-          )
-        ),
-        'filters' => array(
-          'join_date' => array(
-            'type' => CRM_Utils_Type::T_DATE,
-            'operatorType' => CRM_Report_Form::OP_DATE,
-          ),
-          'membership_start_date' => array(
-            'name' => 'start_date',
-            'title' => ts('Membership Start'),
-            'type' => CRM_Utils_Type::T_DATE,
-            'operatorType' => CRM_Report_Form::OP_DATE,
-          ),
-          'membership_end_date' => array(
-            'name' => 'end_date',
-            'title' => 'Membership Expiry',
-            'type' => CRM_Utils_Type::T_DATE,
-            'operatorType' => CRM_Report_Form::OP_DATE,
-          ),
-          'membership_status_id' => array(
-            'name' => 'status_id',
-            'title' => 'Membership Status',
-            'type' => CRM_Utils_Type::T_INT,
-            'options' => CRM_Member_PseudoConstant::membershipStatus(),
-            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
-          ),
-        ),
-      ),
+  function getMembershipColumns($options = array()) {
+    $defaultOptions = array(
+      'prefix' => '',
+      'prefix_label' => '',
+      'group_by' => true,
+      'order_by' => true,
+      'filters' => true,
+      'fields' => true,
+      'custom_fields' => array('Membership'),
+      'defaults' => array(),
     );
+    $options = array_merge($defaultOptions, $options);
+    $membershipFields = array(
+      $options['prefix'] . 'civicrm_membership' => array(
+        'dao' => 'CRM_Member_DAO_Membership',
+        'grouping' => $options['prefix'] . 'member-fields',
+        'alias' => $options['prefix'] . 'civicrm_membership',
+       )
+    );
+    if(!empty($options['fields'])){
+      $membershipFields[$options['prefix'] . 'civicrm_membership']['fields'] = array(
+        $options['prefix'] . 'membership_type_id' => array(
+          'title' => 'Membership Type',
+          'alter_display' => 'alterMembershipTypeID',
+          'name' => 'membership_type_id',
+        ),
+        $options['prefix'] . 'status_id' => array(
+          'title' => 'Membership Status',
+          'alter_display' => 'alterMembershipStatusID',
+          'name' => 'status_id',
+        ),
+        $options['prefix'] . 'join_date' => NULL,
+        $options['prefix'] . 'start_date' => array(
+          'title' => ts('Current Cycle Start Date'),
+          'name' => 'start_date',
+        ),
+        $options['prefix'] . 'end_date' => array(
+          'title' => ts('Current Membership Cycle End Date'),
+          'include_null' => TRUE,
+          'name' => 'end_date',
+        ),
+        $options['prefix'] . 'id' => array(
+          'title' => 'Membership ID / Count',
+          'name' => 'id',
+          'statistics' => array('count' => ts('Number of Memberships')),
+        ),
+      );
+    }
+    if(!empty($options['group_by'])){
+      $membershipFields[$options['prefix'] . 'civicrm_membership']['group_bys'] = array(
+        $options['prefix'] . 'membership_type_id' => array(
+          'title' => ts('Membership Type'),
+          'name' => 'membership_type_id',
+        ),
+        $options['prefix'] . 'status_id' => array(
+          'title' => ts('Membership Status'),
+          'name' => 'status_id',
+        ),
+        $options['prefix'] . 'end_date' => array(
+          'title' => 'Current Membership Cycle End Date',
+          'frequency' => TRUE,
+          'type' => CRM_Utils_Type::T_DATE,
+          'name' => 'end_date',
+        )
+      );
+     }
+     if(!empty($options['filters'])){
+       $membershipFields[$options['prefix'] . 'civicrm_membership']['filters'] = array(
+         $options['prefix'] . 'join_date' => array(
+           'type' => CRM_Utils_Type::T_DATE,
+           'operatorType' => CRM_Report_Form::OP_DATE,
+           'name' => 'join_date',
+         ),
+         $options['prefix'] . 'membership_start_date' => array(
+           'name' => 'start_date',
+           'title' => ts('Membership Start'),
+           'type' => CRM_Utils_Type::T_DATE,
+           'operatorType' => CRM_Report_Form::OP_DATE,
+         ),
+         $options['prefix'] . 'membership_end_date' => array(
+           'name' => 'end_date',
+           'title' => 'Membership Expiry',
+           'type' => CRM_Utils_Type::T_DATE,
+           'operatorType' => CRM_Report_Form::OP_DATE,
+         ),
+         $options['prefix'] . 'membership_status_id' => array(
+           'name' => 'status_id',
+           'title' => 'Membership Status',
+           'type' => CRM_Utils_Type::T_INT,
+           'options' => CRM_Member_PseudoConstant::membershipStatus(),
+           'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+         ),
+       );
+    }
+    return $membershipFields;
   }
+
 
   function getMembershipTypeColumns() {
     require_once 'CRM/Member/PseudoConstant.php';
