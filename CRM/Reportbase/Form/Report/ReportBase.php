@@ -699,7 +699,7 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
             }
             break;
 
-          case CRM_Report_FORM::OP_SELECT:
+          case CRM_Report_Form::OP_SELECT:
             // assume a select field
             $this->addElement('select', "{$fieldName}_op", ts('Operator:'), $operations);
             $this->addElement('select', "{$fieldName}_value", NULL, $field['options']);
@@ -805,10 +805,10 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
           }
           //assign default value as "in" for multiselect
           //operator, To freeze the select element
-          if (CRM_Utils_Array::value('operatorType', $field) == CRM_Report_FORM::OP_MULTISELECT) {
+          if (CRM_Utils_Array::value('operatorType', $field) == CRM_Report_Form::OP_MULTISELECT) {
             $this->_defaults["{$fieldName}_op"] = 'in';
           }
-          elseif (CRM_Utils_Array::value('operatorType', $field) == CRM_Report_FORM::OP_MULTISELECT_SEPARATOR) {
+          elseif (CRM_Utils_Array::value('operatorType', $field) == CRM_Report_Form::OP_MULTISELECT_SEPARATOR) {
             $this->_defaults["{$fieldName}_op"] = 'mhas';
           }
           elseif ($op = CRM_Utils_Array::value('default_op', $field)) {
@@ -897,8 +897,8 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
     // to option_group and option_value table.
 
     switch ($type) {
-      case CRM_Report_FORM::OP_INT:
-      case CRM_Report_FORM::OP_FLOAT:
+      case CRM_Report_Form::OP_INT:
+      case CRM_Report_Form::OP_FLOAT:
         return array(
           'lte' => ts('Is less than or equal to'),
           'gte' => ts('Is greater than or equal to'),
@@ -913,18 +913,18 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
         );
         break;
 
-      case CRM_Report_FORM::OP_SELECT:
+      case CRM_Report_Form::OP_SELECT:
         return array('eq' => ts('Is equal to'));
 
-      case CRM_Report_FORM::OP_MONTH:
-      case CRM_Report_FORM::OP_MULTISELECT:
+      case CRM_Report_Form::OP_MONTH:
+      case CRM_Report_Form::OP_MULTISELECT:
         return array(
           'in' => ts('Is one of'),
           'notin' => ts('Is not one of'),
         );
         break;
 
-      case CRM_Report_FORM::OP_DATE:
+      case CRM_Report_Form::OP_DATE:
         return array(
           'nll' => ts('Is empty (Null)'),
           'nnll' => ts('Is not empty (Null)'),
@@ -936,7 +936,7 @@ class CRM_ReportBase_Form_Report_ReportBase extends CRM_Report_Form {
           'from' => ts('From Date'),
         );
         break;
-      case CRM_Report_FORM::OP_MULTISELECT_SEPARATOR:
+      case CRM_Report_Form::OP_MULTISELECT_SEPARATOR:
         // use this operator for the values, concatenated with separator. For e.g if
         // multiple options for a column is stored as ^A{val1}^A{val2}^A
         return array('mhas' => ts('Is one of'));
@@ -4055,7 +4055,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
       $sql= "
       REPLACE INTO $tmpTableName
       SELECT contact_id, a.id, activity_type_id, activity_date_time
-      FROM 
+      FROM
       (  SELECT contact_id, a.id, activity_type_id, activity_date_time FROM
         civicrm_activity_contact ac
         LEFT JOIN civicrm_activity a ON a.id = ac.activity_id
